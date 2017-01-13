@@ -10,10 +10,12 @@ var Storage = {
     return item;
   },
   
-  edit: function(id) {
+  edit: function(id, name) {
     for (var i = 0; i < this.items.length; i++) {
       if (this.items[i].id == id) {
-        console.log(this.items[i]);
+        //console.log(this.items[i]);
+        this.items[i].name = name;
+        console.log("items " + this.items);
       }
     }
   },
@@ -58,16 +60,22 @@ app.post('/items', jsonParser, function(request, response) {
 
 app.delete('/items/:id', function(request, response) {
   // still need to add fail condition and servers response success
+  var ids = [];
+  for (var i = 0; i < storage.items.length; i++) {
+    ids[i] = storage.items[i].id;
+  }
+  if (!(request.params.id in ids)) {
+    return response.sendStatus(404);
+  }
+  //console.log(ids);
   var num = request.params.id;
   storage.delete(num);
   response.json(storage.items);
-  console.log(storage.items);
+  //console.log(storage.items);
 });
 
-app.put('/items/:id', function(request, response) {
-  var thing = request.on('end', function () {JSON.parse(item);});
-  console.log(thing);
-  storage.edit(request.params.id);
+app.put('/items/:id', jsonParser, function(request, response) {
+  storage.edit(request.params.id, request.body.name);
 });
 
 
