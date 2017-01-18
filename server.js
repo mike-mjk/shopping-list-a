@@ -15,7 +15,7 @@ var Storage = {
       if (this.items[i].id == id) {
         //console.log(this.items[i]);
         this.items[i].name = name;
-        console.log("items " + this.items);
+        //console.log("items " + this.items);
       }
     }
   },
@@ -61,17 +61,15 @@ app.post('/items', jsonParser, function(request, response) {
 app.delete('/items/:id', function(request, response) {
   // still need to add fail condition and servers response success
   var ids = [];
+  var num = Number(request.params.id);
   for (var i = 0; i < storage.items.length; i++) {
     ids[i] = storage.items[i].id;
   }
-  if (!(request.params.id in ids)) {
+  if (ids.indexOf(num) == -1) {
     return response.sendStatus(404);
   }
-  //console.log(ids);
-  var num = request.params.id;
   storage.delete(num);
-  response.json(storage.items);
-  //console.log(storage.items);
+  response.status(200).json(storage.items);
 });
 
 app.put('/items/:id', jsonParser, function(request, response) {
