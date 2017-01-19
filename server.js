@@ -60,11 +60,14 @@ app.post('/items', jsonParser, function(request, response) {
 
 app.delete('/items/:id', function(request, response) {
   // still need to add fail condition and servers response success
-  var ids = [];
-  var num = Number(request.params.id);
-  for (var i = 0; i < storage.items.length; i++) {
-    ids[i] = storage.items[i].id;
-  }
+  // var ids = [];
+  var num = parseInt(request.params.id, 10);
+  // for (var i = 0; i < storage.items.length; i++) {
+  //  ids[i] = storage.items[i].id;
+  // }
+  var ids = storage.items.map(function (v, i) {
+    return storage.items[i].id;
+  });
   if (ids.indexOf(num) == -1) {
     return response.sendStatus(404);
   }
@@ -73,7 +76,35 @@ app.delete('/items/:id', function(request, response) {
 });
 
 app.put('/items/:id', jsonParser, function(request, response) {
+  //console.log(request.body.name.length);
+  // Do the same thing what you did for delete.
+  // Todo: Convert this into storage.isExist() function that returns boolean.
+  var ids = storage.items.map(function (v, i) {
+    return storage.items[i].id;
+  });
+  console.log(ids);
+  // Check if the ID is present. If not...
+  if (ids.indexOf(+request.params.id) === -1) {
+    // In delete, we send 404. But instead, we need to add.
+    // So take the contents from the POST and add it here.
+    // Contents of the POST:
+    console.log("not found");
+    if (!('name' in request.body)) {
+      return response.sendStatus(400);
+    }
+    
+    var item = storage.add(request.body.name);
+    return response.status(201).json(item);
+  }
+  
+  if (request.params.id == null || request.body.name.length == 0) {
+    return response.sendStatus(400);
+  }
   storage.edit(request.params.id, request.body.name);
+  response.status(200).json({
+    id: request.params.id,
+    name: request.params.name
+  });
 });
 
 
