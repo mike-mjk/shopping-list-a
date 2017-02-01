@@ -112,3 +112,6 @@ app.put('/items/:id', jsonParser, function(request, response) {
 //console.log(storage.items);
 
 app.listen(process.env.PORT || 8080, process.env.IP);
+
+exports.app = app;
+exports.storage = storage;
